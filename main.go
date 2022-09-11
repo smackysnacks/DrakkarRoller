@@ -117,10 +117,9 @@ func main() {
 	for {
 		stats := roll(con)
 		sum := stats.Sum()
-		if sum > bestSum {
+		if sum >= bestSum {
 			bestSum = sum
-			fmt.Printf("BEST SUM SO FAR: %d\n", sum)
-			_, _ = outputFile.WriteString(fmt.Sprintf("BEST SUM SO FAR: %d\n", sum))
+			_, _ = outputFile.WriteString(fmt.Sprintf("%d %+v\n", sum, stats))
 		}
 		fmt.Printf("%d %+v\n", sum, stats)
 		time.Sleep(10 * time.Millisecond)
