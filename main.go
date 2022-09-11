@@ -33,7 +33,7 @@ type Stats struct {
 }
 
 func (s *Stats) Sum() int {
-	return s.str + s.int + s.wis + s.wil + s.con + s.agi + s.cha + s.luck
+	return s.str + s.int + s.wil + s.agi + s.cha + s.luck
 }
 
 func statsFromData(buf []byte) Stats {
@@ -52,7 +52,7 @@ func statsFromData(buf []byte) Stats {
 }
 
 func goodStats(stats Stats) bool {
-	return stats.agi >= 17 && stats.cha >= 17 && stats.int >= 17 && stats.str >= 17 && stats.wil >= 17 && stats.wis >= 17 && stats.luck >= 17
+	return stats.agi >= 17 && stats.cha >= 17 && stats.int >= 17 && stats.str >= 17 && stats.wil >= 17 && stats.luck >= 17
 }
 
 func exit(code int, err error) {
