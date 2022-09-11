@@ -8,6 +8,17 @@ import (
 	"time"
 )
 
+var outputFile *os.File
+
+func init() {
+	f, err := os.Create("log.txt")
+	if err != nil {
+		panic(err)
+	}
+
+	outputFile = f
+}
+
 type Stats struct {
 	str    int
 	int    int
@@ -109,6 +120,7 @@ func main() {
 		if sum > bestSum {
 			bestSum = sum
 			fmt.Printf("BEST SUM SO FAR: %d\n", sum)
+			_, _ = outputFile.WriteString(fmt.Sprintf("BEST SUM SO FAR: %d\n", sum))
 		}
 		fmt.Printf("%d %+v\n", sum, stats)
 		time.Sleep(10 * time.Millisecond)
