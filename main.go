@@ -37,6 +37,10 @@ func (s *Stats) Sum() int {
 }
 
 func statsFromData(buf []byte) Stats {
+	if len(buf) < 0x0b {
+		panic("buf not big enuf")
+	}
+
 	return Stats{
 		str:    int(buf[0x01]),
 		int:    int(buf[0x03]),
@@ -122,7 +126,7 @@ func main() {
 			_, _ = outputFile.WriteString(fmt.Sprintf("%d %+v\n", sum, stats))
 		}
 		fmt.Printf("%d %+v\n", sum, stats)
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(1 * time.Millisecond)
 
 		if goodStats(stats) {
 			accept(con)
