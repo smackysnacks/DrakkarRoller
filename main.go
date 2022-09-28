@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/hex"
 	"fmt"
 	"net"
 	"os"
@@ -91,11 +90,10 @@ func roll(con net.Conn) Stats {
 func accept(con net.Conn) {
 	buffer := make([]byte, 64)
 	_, _ = con.Write([]byte{0x41})
-	n, err := con.Read(buffer)
+	_, err := con.Read(buffer)
 	if err != nil {
 		exit(1, err)
 	}
-	fmt.Println(hex.Dump(buffer[0:n]))
 }
 
 func main() {
