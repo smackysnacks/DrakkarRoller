@@ -1,0 +1,12 @@
+{
+  "CharacterName": "Smacks",
+  "CharacterIsMale": true,
+  "MinimumStr": 17,
+  "MinimumInt": 17,
+  "MinimumWis": 1,
+  "MinimumWil": 17,
+  "MinimumCon": 1,
+  "MinimumAgi": 17,
+  "MinimumCha": 17,
+  "MinimumLuck": 17
+}

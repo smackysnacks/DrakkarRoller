@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"os"
@@ -8,14 +9,41 @@ import (
 )
 
 var outputFile *os.File
+var config Config
 
 func init() {
-	f, err := os.Create("log.txt")
+	var err error
+
+	outputFile, err = os.Create("log.txt")
 	if err != nil {
 		panic(err)
 	}
 
-	outputFile = f
+	bytes, err := os.ReadFile("config.json")
+	if err != nil {
+		panic(err)
+	}
+
+	err = json.Unmarshal(bytes, &config)
+	if err != nil {
+		panic(err)
+	}
+
+	p, _ := json.MarshalIndent(config, "", "  ")
+	fmt.Fprintf(outputFile, "Configuration:\n%s\n", string(p))
+}
+
+type Config struct {
+	CharacterName   string `json:"CharacterName"`
+	CharacterIsMale bool   `json:"CharacterIsMale"`
+	MinimumStr      int    `json:"MinimumStr"`
+	MinimumInt      int    `json:"MinimumInt"`
+	MinimumWis      int    `json:"MinimumWis"`
+	MinimumWil      int    `json:"MinimumWil"`
+	MinimumCon      int    `json:"MinimumCon"`
+	MinimumAgi      int    `json:"MinimumAgi"`
+	MinimumCha      int    `json:"MinimumCha"`
+	MinimumLuck     int    `json:"MinimumLuck"`
 }
 
 type Stats struct {
@@ -55,7 +83,14 @@ func statsFromData(buf []byte) Stats {
 }
 
 func goodStats(stats Stats) bool {
-	return stats.agi >= 17 && stats.cha >= 17 && stats.int >= 17 && stats.str >= 17 && stats.wil >= 17 && stats.luck >= 17
+	return stats.str >= config.MinimumStr &&
+		stats.int >= config.MinimumInt &&
+		stats.wis >= config.MinimumWis &&
+		stats.wil >= config.MinimumWil &&
+		stats.con >= config.MinimumCon &&
+		stats.agi >= config.MinimumAgi &&
+		stats.cha >= config.MinimumCha &&
+		stats.luck >= config.MinimumLuck
 }
 
 func exit(code int, err error) {
@@ -72,10 +107,17 @@ func heartbeat(con net.Conn) {
 	}
 }
 
+func characterGenderSymbol(isMale bool) rune {
+	if isMale {
+		return 'M'
+	}
+	return 'F'
+}
+
 func roll(con net.Conn) Stats {
 	buffer := make([]byte, 64)
 
-	_, _ = con.Write([]byte("CM10Smacks"))
+	_, _ = con.Write([]byte(fmt.Sprintf("C%c10%s", characterGenderSymbol(config.CharacterIsMale), config.CharacterName)))
 	_, _ = con.Write([]byte{0x00})
 	_, _ = con.Write([]byte{0x53})
 
@@ -121,7 +163,7 @@ func main() {
 		sum := stats.Sum()
 		if sum >= bestSum {
 			bestSum = sum
-			_, _ = outputFile.WriteString(fmt.Sprintf("%d %+v\n", sum, stats))
+			_, _ = fmt.Fprintf(outputFile, "%d, %+v\n", sum, stats)
 		}
 		fmt.Printf("%d %+v\n", sum, stats)
 		time.Sleep(1 * time.Millisecond)
@@ -132,6 +174,4 @@ func main() {
 			exit(0, nil)
 		}
 	}
-
-	time.Sleep(time.Second * 10)
 }
