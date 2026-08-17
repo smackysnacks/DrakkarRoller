@@ -64,8 +64,8 @@ func (s *Stats) Sum() int {
 }
 
 func statsFromData(buf []byte) Stats {
-	if len(buf) < 0x0b {
-		panic("buf not big enuf")
+	if len(buf) < 0x10 {
+		panic("stat buffer too short")
 	}
 
 	return Stats{
@@ -97,6 +97,7 @@ func exit(code int, err error) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	_ = outputFile.Close()
 	os.Exit(code)
 }
 
